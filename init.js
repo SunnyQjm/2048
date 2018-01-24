@@ -29,8 +29,8 @@ var colors = {
     16: "coral",
     32: "darkorange",
     64: "darkorange",
-    128: "greenyellow",
-    256: "greenyellow",
+    128: "hotpink",
+    256: "hotpink",
     512: "orange",
     1024: "orange"
 };
