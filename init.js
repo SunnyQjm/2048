@@ -56,32 +56,52 @@ function startNewGame() {
 function randomAdd(){
     placeABlock(randomBetween(0, 1) === 0 ? 2 : 4);
 }
+var startX;
+var startY;
+function handleTouchEvent(event) {
+    switch (event.type){
+        case "touchstart":
+            startX = event.touches[0].pageX;
+            startY = event.touches[0].pageY;
+            break;
+        case "touchend":
+            var spanX = event.changedTouches[0].pageX - startX;
+            var spanY = event.changedTouches[0].pageY - startY;
 
-$(function () {
-    scoreItem = $("#score_value");
-    bestItem = $("#best_value");
-    $("#new_game").click(function () {
-       startNewGame();
-    });
-    //初始化游戏界面
-    gameBody = $("#game-body");
-    size = getSuitableSize(0.6);
-    $("#score").width(size + 50);
-    gameBody.width(size + 50)
-        .height(size + 60);
-    for (i = 0; i < 16; i++) {
-        var div = $("<div></div>")
-            .addClass("cell")
-            .width(size / 4)
-            .height(size / 4)
-            .attr({
-                'id': 'b-container' + i
-            });
-        containers.push(div);
-        gameBody.append(div);
+            if(Math.abs(spanX) > Math.abs(spanY)){      //认定为水平方向滑动
+                if(spanX > 30){         //向右
+                    myRight();
+                } else if(spanX < -30){ //向左
+                    myLeft();
+                }
+            } else {        //认定为垂直方向滑动
+                if(spanY > 30){         //向下
+                    myDown();
+                } else if (spanY < -30) {//向上
+                    myUp();
+                }
+            }
+
+            break;
+        case "touchmove":
+            //阻止默认行为
+            event.preventDefault();
+            break;
     }
+}
+/**
+ * 处理手机触摸事件
+ */
+function dealTouchEvent() {
+    EventUtil.addHandler(document, "touchstart", handleTouchEvent);
+    EventUtil.addHandler(document, "touchend", handleTouchEvent);
+    EventUtil.addHandler(document, "touchmove", handleTouchEvent);
+}
 
-    //监听键盘的按键行为
+/**
+ * 处理键盘事件
+ */
+function dealKeyDownEvent() {
     $(document).keydown(function (event) {
         switch (event.which) {
             case 38: //上
@@ -99,7 +119,37 @@ $(function () {
         }
         console.log(event.which);
     });
+}
 
+$(function () {
+    scoreItem = $("#score_value");
+    bestItem = $("#best_value");
+    $("#new_game").click(function () {
+       startNewGame();
+    });
+    //初始化游戏界面
+    gameBody = $("#game-body");
+    size = getSuitableSize(0.6);
+    $("#score").width(size + 50);
+    gameBody.width(size + 50)
+        .height(size + 60);
+    for (var i = 0; i < 16; i++) {
+        var div = $("<div></div>")
+            .addClass("cell")
+            .width(size / 4)
+            .height(size / 4)
+            .attr({
+                'id': 'b-container' + i
+            });
+        containers.push(div);
+        gameBody.append(div);
+    }
+
+    //监听键盘的按键行为
+    dealKeyDownEvent();
+
+    //处理手机的触摸事件
+    dealTouchEvent();
     startNewGame();
 });
 
