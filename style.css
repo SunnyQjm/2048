@@ -1,0 +1,28 @@
+#game-body {
+    margin: auto auto;
+    background-color: #bbada0;
+    border: 5px darkgray;
+    border-radius: 10px;
+    padding: 0;
+}
+
+.cell {
+    background-color: beige;
+    border: 1px darkgray;
+    border-radius: 10px;
+    margin: 5px;
+    display: inline-block;
+    padding: 0;
+    text-align: center;
+    position: relative;
+}
+
+.work-cell {
+    position: absolute;
+    text-align: center;
+    margin: auto auto;
+    color: aliceblue;
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0;
+}
