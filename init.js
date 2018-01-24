@@ -15,14 +15,39 @@ var right_order = [3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12];
 var up_order = [0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15];
 var down_order = [12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3];
 
-$(function () {
-    //初始化空闲区域
-    for (var i = 0; i < 16; i++)
-        idleContainers[i] = i;
+//分数系统
+var scoreNum = 0;
+var bestScore = 0;
+var scoreItem;
+var bestItem;
 
+/**
+ * 开始一局新的游戏
+ */
+function startNewGame() {
+    var keys = Object.keys(cellValues);
+    for(var i = 0; i < keys.length; i++){
+        cellValues[keys[i]].target.remove();
+        delete cellValues[keys[i]];
+    }
+    //初始化空闲区域
+    for (i = 0; i < 16; i++)
+        idleContainers[i] = i;
+    scoreNum = 0;
+    scoreItem.text(0);
+    placeABlock(randomBetween(0, 1) === 0 ? 2 : 4);
+}
+
+$(function () {
+    scoreItem = $("#score_value");
+    bestItem = $("#best_value");
+    $("#new_game").click(function () {
+       startNewGame();
+    });
     //初始化游戏界面
     gameBody = $("#game-body");
     size = getSuitableSize(0.6);
+    $("#score").width(size + 50);
     gameBody.width(size + 50)
         .height(size + 60);
     for (i = 0; i < 16; i++) {
@@ -36,8 +61,6 @@ $(function () {
         containers.push(div);
         gameBody.append(div);
     }
-
-    placeABlock(randomBetween(0, 1) === 0 ? 2 : 4);
 
     //监听键盘的按键行为
     $(document).keydown(function (event) {
@@ -56,7 +79,9 @@ $(function () {
                 break;
         }
         console.log(event.which);
-    })
+    });
+
+    startNewGame();
 });
 
 /**
@@ -88,6 +113,15 @@ function myRight() {
 }
 
 
+function updateScore(plusScore) {
+    scoreNum += plusScore;
+    scoreItem.text(scoreNum);
+    if(scoreNum > bestScore){
+        bestScore = scoreNum;
+        bestItem.text(bestScore);
+    }
+}
+
 /**
  * 执行滑动操作
  * @param arr  遍历顺序数组
@@ -97,6 +131,7 @@ function doAction(arr, direction) {
     var np;
     var merged = {};
     var isMove = false;
+    var plusScore = 1;
     for (var i = 0; i < arr.length; i++) {
         np = next(arr[i], direction, merged);
         if (np < 0 || cellValues[arr[i]] === undefined)
@@ -106,6 +141,7 @@ function doAction(arr, direction) {
             cellValues[arr[i]].target.myTransTo(containers, np);
             resetPosition(cellValues, arr[i], np);
         } else if (cellValues[np].value === cellValues[arr[i]].value) {        //可以合并
+            plusScore *= cellValues[np].value;
             isMove = true;
             merged[np] = np;
             easyMerge(arr[i], np);
@@ -114,6 +150,8 @@ function doAction(arr, direction) {
     if(isMove){     //如果本次操作有块移动了，则放置一个新块
         window.setTimeout(function () {
             placeABlock(randomBetween(0, 1) === 0 ? 2 : 4);
+            if(plusScore !== 1)
+                updateScore(plusScore);
         }, 100)
     }
 
