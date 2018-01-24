@@ -56,46 +56,12 @@ function startNewGame() {
 function randomAdd(){
     placeABlock(randomBetween(0, 1) === 0 ? 2 : 4);
 }
-var startX;
-var startY;
-function handleTouchEvent(event) {
-    switch (event.type){
-        case "touchstart":
-            startX = event.touches[0].pageX;
-            startY = event.touches[0].pageY;
-            break;
-        case "touchend":
-            var spanX = event.changedTouches[0].pageX - startX;
-            var spanY = event.changedTouches[0].pageY - startY;
 
-            if(Math.abs(spanX) > Math.abs(spanY)){      //认定为水平方向滑动
-                if(spanX > 30){         //向右
-                    myRight();
-                } else if(spanX < -30){ //向左
-                    myLeft();
-                }
-            } else {        //认定为垂直方向滑动
-                if(spanY > 30){         //向下
-                    myDown();
-                } else if (spanY < -30) {//向上
-                    myUp();
-                }
-            }
-
-            break;
-        case "touchmove":
-            //阻止默认行为
-            event.preventDefault();
-            break;
-    }
-}
 /**
  * 处理手机触摸事件
  */
 function dealTouchEvent() {
-    EventUtil.addHandler(document, "touchstart", handleTouchEvent);
-    EventUtil.addHandler(document, "touchend", handleTouchEvent);
-    EventUtil.addHandler(document, "touchmove", handleTouchEvent);
+    EventUtil.listenTouchDirection(document, false, myUp, myRight, myDown, myLeft);
 }
 
 /**
