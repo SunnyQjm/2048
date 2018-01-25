@@ -61,7 +61,7 @@ function randomAdd(){
  * 处理手机触摸事件
  */
 function dealTouchEvent() {
-    EventUtil.listenTouchDirection(document, false, myUp, myRight, myDown, myLeft);
+    EventUtil.listenTouchDirection(document, true, myUp, myRight, myDown, myLeft);
 }
 
 /**
